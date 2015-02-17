@@ -1,5 +1,10 @@
+
+
+var $refresh = $('.refresh');
+var $friends = $('#friends');
+
 var app = {};
-app.server = 'https://api.parse.com/1/classes/chatterbox';
+app.server = 'https://api.parse.com/1/classes/chatterbox?order=-createdAt';
 
 app.friends = [];
 
@@ -12,11 +17,13 @@ app.send = function(msg) {
 
   $.ajax({
     // always use this url
-    url: app.server,
+    url: 'https://api.parse.com/1/classes/chatterbox',
     type: 'POST',
     data: JSON.stringify(msg),
     contentType: 'application/json',
     success: function (data) {
+      console.log(JSON.stringify(msg));
+      console.log(data);
       console.log('chatterbox: Message sent');
     },
     error: function (data) {
@@ -42,7 +49,7 @@ app.fetch = function(){
 };
 
 app.clearMessages = function(){
-  $("#chats").empty();
+  $('#chats').empty();
 };
 
 // adds a message object to the page
@@ -57,6 +64,7 @@ app.addMessage = function(msg) {
         .text(msg.username)
         .on('click', function(){ app.addFriend(msg.username); });
   $username.append($username_link);
+
   var $text = $('<div>').addClass('text').text(msg.text);
   var $roomname = $('<div>').addClass('roomname').text(msg.roomname);
 
@@ -66,10 +74,10 @@ app.addMessage = function(msg) {
 };
 
 app.addRoom = function(roomName) {
-   var $rooms = $("#roomSelect");
-
    //TODO: style this div, yo
    var $room = $('<div>').text(roomName);
+   var $rooms = $('#roomSelect');
+
    $rooms.append($room);
 
 };
@@ -78,7 +86,10 @@ app.addFriend = function(name) {
   if(app.friends.indexOf(name) === -1){
     app.friends.push(name);
   }
+  $friends.append(name);
 };
 
-app.init();
-app.addRoom('Home');
+app.refresh = function() {
+
+}
+
