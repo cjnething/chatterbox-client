@@ -1,16 +1,25 @@
 
-
-var $refresh = $('.refresh');
-var $friends = $('#friends');
+/********************
+ * GLOBAL VARIABLES *
+ * ******************/
 
 var app = {};
 app.server = 'https://api.parse.com/1/classes/chatterbox?order=-createdAt';
 
 app.friends = [];
+app.rawData = [];
 
 app.init = function() {
+
+  var cb = function(){
+    _.each(app.rawData, function(data){
+      app.addMessage(data);
+    });
+  };
+
   app.clearMessages();
-  app.fetch();
+  app.fetch(cb);
+
 };
 
 app.send = function(msg) {
@@ -33,19 +42,12 @@ app.send = function(msg) {
   });
 };
 
-app.fetch = function(){
-
-// TODO
-  $.get( app.server, function( data ) {
-      //For loop: iterate over data.results (up to data.results.length)
-      //It's an array of objects
-      //So for each data.result[i] you can find [username], [text], [message]
-      _.each(data.results, function(chat){
-        app.addMessage(chat);
-      });
-
-    });
-
+// gets 100 tweets and stores them in rawData
+app.fetch = function(callback){
+  $.get(app.server, function(data) {
+    app.rawData = data.results;
+    callback();
+  });
 };
 
 app.clearMessages = function(){
@@ -88,8 +90,4 @@ app.addFriend = function(name) {
   }
   $friends.append(name);
 };
-
-app.refresh = function() {
-
-}
 

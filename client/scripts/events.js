@@ -1,10 +1,19 @@
 $(function(){
+
+
+  /* ****************
+   * EVENT HANDLERS *
+   * ****************/
+
   $('.refresh').on('click', this, function(){
       app.init();
   });
 
-app.init();
+  /* **************
+   * DEFAULT CODE *
+   * **************/
 
-app.addRoom('Home');
+  app.init();
+  app.addRoom('Home');
 
 });
