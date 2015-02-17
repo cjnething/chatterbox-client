@@ -1,6 +1,10 @@
 var app = {};
 app.server = 'https://api.parse.com/1/classes/chatterbox';
+
+app.friends = [];
+
 app.init = function() {
+  app.clearMessages();
   app.fetch();
 };
 
@@ -29,8 +33,8 @@ app.fetch = function(){
       //For loop: iterate over data.results (up to data.results.length)
       //It's an array of objects
       //So for each data.result[i] you can find [username], [text], [message]
-      _.each(data.results, function(chatObject){
-        app.addMessage(chatObject);
+      _.each(data.results, function(chat){
+        app.addMessage(chat);
       });
 
     });
@@ -41,12 +45,18 @@ app.clearMessages = function(){
   $("#chats").empty();
 };
 
+// adds a message object to the page
 app.addMessage = function(msg) {
 
   // TODO: style this ishhhhhh
   var $chat = $('<div>').addClass('chat');
+
   var $username = $('<div>').addClass('username');
-  $username.append($('<a>').attr('href', '#').text(msg.username));
+  var $username_link = $('<a>').attr('href', '#')
+        .addClass('username_link')
+        .text(msg.username)
+        .click(function(){ app.addFriend(msg.username); });
+  $username.append($username_link);
   var $text = $('<div>').addClass('text').text(msg.text);
   var $roomname = $('<div>').addClass('roomname').text(msg.roomname);
 
@@ -64,8 +74,8 @@ app.addRoom = function(roomName) {
 
 };
 
-app.addFriend = function() {
-
+app.addFriend = function(name) {
+  app.friends.push(name);
 };
 
 app.init();
