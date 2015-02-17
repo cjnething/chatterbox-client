@@ -7,19 +7,35 @@ var app = {};
 app.server = 'https://api.parse.com/1/classes/chatterbox?order=-createdAt';
 
 app.friends = [];
+app.rooms = {};
 app.rawData = [];
 
+
+// Clears and repopulates the chats section
 app.init = function() {
 
   var cb = function(){
     _.each(app.rawData, function(data){
       app.addMessage(data);
     });
+    app.roomify();
   };
 
   app.clearMessages();
   app.fetch(cb);
 
+};
+
+// Add tweets to the room object at the corresponding key
+app.roomify = function(){
+
+  for (var i = 0; i<app.rawData.length; i++) {
+    if(!app.rooms[app.rawData[i]["roomname"]]){
+      app.rooms[app.rawData[i]["roomname"]] = [];
+    }else{
+      app.rooms[app.rawData[i]["roomname"]].push(app.rawData[i]);
+    }
+  }
 };
 
 app.send = function(msg) {
