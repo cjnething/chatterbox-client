@@ -13,12 +13,34 @@
     <script src="scripts/app.js"></script>
   </head>
   <body>
-    <div id="main">
-      <h1>chatterbox</h1>
+
+        <h1>chatterbox</h1>
       <div><a href="#" class="refresh">Refresh</a></div>
+
+    <div id="main">
+
+      <div id="friends">Friends List</div>
+      <div id="chatterbox">
+        <div id="top">
+          <div id="name">Anonymoose</div>
+          <div id="room">Living Room</div>
+        </div>
+        <div id="text">I like lettuce. If you give a moose a muffin, he will want milk.</div>
+      </div>
       <div id="roomSelect"></div>
-      <div id ="friends"></div>
       <div id="chats"></div>
+
+      <form>
+        <div id = "userSubmit">
+        <h3>Compose Tweet</h1>
+        <input id="newName" type="text" placeholder="Username"/>
+        <input id="newRoom" type="text" placeholder="room"/>
+        <input id="newText" type="text" placeholder="tweet text"/>
+        <input type="button" value="Compose Tweet" id= "button"/>
+       </label>
+
+      </form>
+
     </div>
     <script src="scripts/events.js"></script>
   </body>

@@ -6,7 +6,7 @@
 var app = {};
 app.server = 'https://api.parse.com/1/classes/chatterbox?order=-createdAt';
 
-app.friends = [];
+app.friends = {};
 app.rooms = {};
 app.rawData = [];
 
@@ -81,6 +81,7 @@ app.addMessage = function(msg) {
         .addClass('username_link')
         .text(msg.username)
         .on('click', function(){ app.addFriend(msg.username); });
+
   $username.append($username_link);
 
   var $text = $('<div>').addClass('text').text(msg.text);
@@ -101,9 +102,30 @@ app.addRoom = function(roomName) {
 };
 
 app.addFriend = function(name) {
-  if(app.friends.indexOf(name) === -1){
-    app.friends.push(name);
+
+  // adds friend to friends object
+  var tweets = [];
+  for(var i = 0; i <app.rawData.length; i++){
+    if(app.rawData[i]['username'] === name){
+      tweets.push(app.rawData[i]);
+    }
   }
-  $friends.append(name);
+  app.friends[name] = tweets;
+  var $link = $('<a>').attr('href', '#')
+  .text(name)
+  .on('click', function() { app.displayFriend(name) });
+  // add a link to the friend in the friends section
+  $('#friends').append($link);
+
 };
 
+app.displayFriend = function(name){
+
+  app.clearMessages();
+
+  var tweets = app.friends[name];
+  _.each(tweets, function(tweet) {
+    app.addMessage(tweet);
+  });
+
+}
