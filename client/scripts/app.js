@@ -55,7 +55,7 @@ app.addMessage = function(msg) {
   var $username_link = $('<a>').attr('href', '#')
         .addClass('username_link')
         .text(msg.username)
-        .click(function(){ app.addFriend(msg.username); });
+        .on('click', function(){ app.addFriend(msg.username); });
   $username.append($username_link);
   var $text = $('<div>').addClass('text').text(msg.text);
   var $roomname = $('<div>').addClass('roomname').text(msg.roomname);
@@ -75,7 +75,9 @@ app.addRoom = function(roomName) {
 };
 
 app.addFriend = function(name) {
-  app.friends.push(name);
+  if(app.friends.indexOf(name) === -1){
+    app.friends.push(name);
+  }
 };
 
 app.init();
