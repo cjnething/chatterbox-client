@@ -9,20 +9,38 @@ app.server = 'https://api.parse.com/1/classes/chatterbox?order=-createdAt';
 app.friends = {};
 app.rooms = {};
 app.rawData = [];
-
+app.stopTimer = false;
+app.timerInterval = 4000;
 
 // Clears and repopulates the chats section
 app.init = function() {
 
-  var cb = function(){
-    _.each(app.rawData, function(data){
-      app.addMessage(data);
-    });
+  var subroutine = function(){
+
     app.roomify();
+    var i = 0;
+
+    (function nextMessage(){
+
+      setTimeout(function(){
+        $('#chatterbox').fadeOut('slow', function(){
+          app.addMessage(app.rawData[i]);
+          $('#chatterbox').fadeIn('slow', function(){
+            i++;
+          }).delay(app.timerInterval);
+          if(i < app.rawData.length && !app.stopTimer){ nextMessage(); }
+          else if(app.stopTimer) {
+            app.stopTimer = false;
+          }
+        });
+      }, app.timerInterval);
+
+    })();
+
   };
 
   app.clearMessages();
-  app.fetch(cb);
+  app.fetch(subroutine);
 
 };
 
@@ -67,29 +85,28 @@ app.fetch = function(callback){
 };
 
 app.clearMessages = function(){
-  $('#chats').empty();
+  $("#name").find($('a')).empty();
+  $('#room').empty();
+  $('#text').empty();
 };
 
 // adds a message object to the page
 app.addMessage = function(msg) {
 
-  // TODO: style this ishhhhhh
-  var $chat = $('<div>').addClass('chat');
+  if(!msg) { return; }
+  if (!msg.roomname) {
+    msg.roomname = "Default";
+  }
+  if (!msg.username) {
+    msg.username = "Student";
+  }
+  if (!msg.text) {
+    msg.text = "Basic Tweet";
+  }
 
-  var $username = $('<div>').addClass('username');
-  var $username_link = $('<a>').attr('href', '#')
-        .addClass('username_link')
-        .text(msg.username)
-        .on('click', function(){ app.addFriend(msg.username); });
-
-  $username.append($username_link);
-
-  var $text = $('<div>').addClass('text').text(msg.text);
-  var $roomname = $('<div>').addClass('roomname').text(msg.roomname);
-
-  $chat.append($username).append($text).append($roomname);
-  $('#chats').append($chat);
-
+  $("#room").text(msg.roomname);
+  $("#name").find($('a')).text(msg.username);
+  $("#text").text(msg.text);
 };
 
 app.addRoom = function(roomName) {
@@ -103,6 +120,12 @@ app.addRoom = function(roomName) {
 
 app.addFriend = function(name) {
 
+   for (var i = 0; i<$('#friends').children().length; i++) {
+      if ($($('#friends').children()[i]).text() === name) {
+         return;
+      }
+   }
+
   // adds friend to friends object
   var tweets = [];
   for(var i = 0; i <app.rawData.length; i++){
@@ -110,10 +133,16 @@ app.addFriend = function(name) {
       tweets.push(app.rawData[i]);
     }
   }
+
   app.friends[name] = tweets;
   var $link = $('<a>').attr('href', '#')
   .text(name)
-  .on('click', function() { app.displayFriend(name) });
+  .on('click', function() {
+    app.stopTimer = true;
+              console.log("name", name);
+
+    app.displayFriend(name);
+  });
   // add a link to the friend in the friends section
   $('#friends').append($link);
 
@@ -122,10 +151,29 @@ app.addFriend = function(name) {
 app.displayFriend = function(name){
 
   app.clearMessages();
+  app.roomify();
+  var i = 0;
 
-  var tweets = app.friends[name];
-  _.each(tweets, function(tweet) {
-    app.addMessage(tweet);
-  });
+  (function nextMessage(){
+
+    setTimeout(function(){
+      $('#chatterbox').fadeOut('slow', function(){
+        app.addMessage(app.friends[name][i]);
+        $('#chatterbox').fadeIn('slow', function(){
+          i++;
+        }).delay(app.timerInterval);
+        if(i < app.friends[name].length && !app.stopTimer){ nextMessage(); }
+         else if(app.stopTimer) {
+            app.stopTimer = false;
+          }
+      });
+    }, app.timerInterval);
+
+  })();
+
+
 
 }
+
+
+
